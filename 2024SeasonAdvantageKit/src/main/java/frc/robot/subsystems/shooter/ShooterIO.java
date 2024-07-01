@@ -31,9 +31,9 @@ public interface ShooterIO {
 
     public default void updateInputs(ShooterIOInputs inputs) {}
 
-    public default void setVoltage(double topAppliedVolts, double bottomAppliedVolts) {}
+    public default void setVoltage(MutableMeasure<Voltage> topAppliedVolts, MutableMeasure<Voltage> bottomAppliedVolts) {}
 
     public default void setPID(double p, double i, double d) {}
 
-    public default void setRPM(double topTargetRPM, double bottomTargetRPM) {}
+    public default void setRPM(MutableMeasure<Velocity<Angle>> topTargetRPM, MutableMeasure<Velocity<Angle>> bottomTargetRPM) {}
 }

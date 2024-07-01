@@ -34,9 +34,9 @@ public interface PivotIO {
 
     public default void updateInputs(PivotIOInputs inputs) {}
 
-    public default void setSetpointInDegrees(double setpointInDegrees) {}
+    public default void setSetpoint(MutableMeasure<Angle> setpoint) {}
 
-    public default void setZeroPosition(double position) {}
+    public default void setZeroPosition(MutableMeasure<Angle> position) {}
 
     public default void setPID(double p, double i, double d) {}
 
