@@ -1,13 +1,18 @@
 package frc.robot.subsystems.climber;
 
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkLowLevel.MotorType;
+
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.units.MutableMeasure;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
+import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.simulation.PWMSim;
@@ -20,8 +25,8 @@ import frc.robot.Constants.ElevatorConstants;
 
 //TODO fix constants to actual mechanism
 public class ClimberIOSim implements ClimberIO, AutoCloseable {
-    //use WPILib's ElevatorSim class to set max/min climber extensions (okay to simulate 2 stage climber as 1 stage elevator)
-    private final DCMotor m_elevatorGearbox = DCMotor.getVex775Pro(4);
+  //use WPILib's ElevatorSim class to set max/min climber extensions (okay to simulate 2 stage climber as 1 stage elevator)
+  private final DCMotor m_elevatorGearbox = DCMotor.getNeo550(2);
 
   // Standard classes for controlling our elevator
   private final ProfiledPIDController m_controller =
@@ -38,7 +43,7 @@ public class ClimberIOSim implements ClimberIO, AutoCloseable {
           ElevatorConstants.kElevatorkA);
   private final Encoder m_encoder =
       new Encoder(ElevatorConstants.kEncoderAChannel, ElevatorConstants.kEncoderBChannel);
-  private final PWMSparkMax m_motor = new PWMSparkMax(ElevatorConstants.kMotorPort);
+  private final CANSparkMax m_motor = new CANSparkMax(ElevatorConstants.kMotorPort, MotorType.kBrushless);
 
   // Simulation classes help us simulate what's going on, including gravity.
   private final ElevatorSim m_elevatorSim =
@@ -52,7 +57,8 @@ public class ClimberIOSim implements ClimberIO, AutoCloseable {
           true,
           0);
   private final EncoderSim m_encoderSim = new EncoderSim(m_encoder);
-  private final PWMSim m_motorSim = new PWMSim(m_motor);
+  //TODO calculate inertia
+  private final DCMotorSim m_motorSim = new DCMotorSim(m_elevatorGearbox, 40, DCMotor.getNeo550(2).stallTorqueNewtonMeters);
 
   // Create a Mechanism2d visualization of the elevator
   private final Mechanism2d m_mech2d = new Mechanism2d(20, 50);
@@ -61,20 +67,15 @@ public class ClimberIOSim implements ClimberIO, AutoCloseable {
       m_mech2dRoot.append(
           new MechanismLigament2d("Elevator", m_elevatorSim.getPositionMeters(), 90));
 
-  /** Subsystem constructor. */
   public ClimberIOSim() {
     m_encoder.setDistancePerPulse(ElevatorConstants.kElevatorEncoderDistPerPulse);
-
-    // Publish Mechanism2d to SmartDashboard
-    // To view the Elevator visualization, select Network Tables -> SmartDashboard -> Elevator Sim
     SmartDashboard.putData("Elevator Sim", m_mech2d);
   }
 
-  /** Advance the simulation. */
   public void simulationPeriodic() {
     // In this method, we update our simulation of what our elevator is doing
     // First, we set our "inputs" (voltages)
-    m_elevatorSim.setInput(m_motorSim.getSpeed() * RobotController.getBatteryVoltage());
+    m_elevatorSim.setInput(m_motorSim.getAngularVelocityRPM() * RobotController.getBatteryVoltage());
 
     // Next, we update it. The standard loop time is 20ms.
     m_elevatorSim.update(0.020);
@@ -84,6 +85,12 @@ public class ClimberIOSim implements ClimberIO, AutoCloseable {
     // SimBattery estimates loaded battery voltages
     RoboRioSim.setVInVoltage(
         BatterySim.calculateDefaultBatteryLoadedVoltage(m_elevatorSim.getCurrentDrawAmps()));
+  }
+
+  @Override
+  public void updateInputs(ClimberIOInputs inputs) {
+    //inputs.climberLeaderPosition = MutableMeasure.ofBaseUnits(m_motorSim.getPosition(), null);
+
   }
 
   /**
