@@ -8,14 +8,13 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.MutableMeasure;
+import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
-import edu.wpi.first.wpilibj.simulation.PWMSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
@@ -89,8 +88,8 @@ public class ClimberIOSim implements ClimberIO, AutoCloseable {
 
   @Override
   public void updateInputs(ClimberIOInputs inputs) {
-    //inputs.climberLeaderPosition = MutableMeasure.ofBaseUnits(m_motorSim.getPosition(), null);
-
+    inputs.climberLeaderPosition = MutableMeasure.ofBaseUnits(m_motorSim.getAngularPositionRotations(), Units.Rotations);
+    inputs.climberFollowerPosition = MutableMeasure.ofBaseUnits(m_motorSim.getAngularPositionRotations(), Units.Rotations);
   }
 
   /**

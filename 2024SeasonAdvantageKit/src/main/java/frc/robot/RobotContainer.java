@@ -17,6 +17,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -43,6 +44,7 @@ public class RobotContainer {
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
+  private final Joystick stick = new Joystick(0);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -63,6 +65,7 @@ public class RobotContainer {
 
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
+        System.out.println("in simulation mode");
         drive =
             new Drive(
                 new GyroIO() {},
@@ -87,6 +90,8 @@ public class RobotContainer {
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
+
+    autoChooser.addDefaultOption("default drive", AutoBuilder.buildAuto("Example Auto"));
     // Set up SysId routines
     autoChooser.addOption(
         "Drive SysId (Quasistatic Forward)",
@@ -110,12 +115,13 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    drive.setDefaultCommand(
-        DriveCommands.joystickDrive(
-            drive,
-            () -> -controller.getLeftY(),
-            () -> -controller.getLeftX(),
-            () -> -controller.getRightX()));
+    //drive.setDefaultCommand(DriveCommands.rotateCommand(drive, () -> -controller.getLeftX()));
+    drive.setDefaultCommand(DriveCommands.joystickDrive(
+      drive,
+      () -> -stick.getRawAxis(0), 
+      () -> -stick.getRawAxis(1), 
+      () -> -stick.getRawAxis(2)));
+      
     controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
     controller
         .b()

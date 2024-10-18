@@ -31,7 +31,6 @@ public class DriveCommands {
   private static final double DEADBAND = 0.1;
 
   private DriveCommands() {}
-
   /**
    * Field relative drive command using two joysticks (controlling linear and angular velocities).
    */
@@ -40,6 +39,7 @@ public class DriveCommands {
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
       DoubleSupplier omegaSupplier) {
+        System.out.printf(" x %f, y: %f, rotation: %f", xSupplier.getAsDouble(), ySupplier.getAsDouble(), omegaSupplier.getAsDouble());
     return Commands.run(
         () -> {
           // Apply deadband
@@ -74,5 +74,11 @@ public class DriveCommands {
                       : drive.getRotation()));
         },
         drive);
+  }
+
+  public static Command rotateCommand(Drive drive, DoubleSupplier rot) {
+    return Commands.run(() -> {
+        drive.runVelocity(new ChassisSpeeds(0, 0, rot.getAsDouble()));
+    }, drive);
   }
 }
