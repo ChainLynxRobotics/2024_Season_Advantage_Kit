@@ -7,6 +7,8 @@ import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.units.Angle;
+import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.MutableMeasure;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.Encoder;
@@ -60,7 +62,7 @@ public class ClimberIOSim implements ClimberIO, AutoCloseable {
   private final DCMotorSim m_motorSim = new DCMotorSim(m_elevatorGearbox, 40, DCMotor.getNeo550(2).stallTorqueNewtonMeters);
 
   // Create a Mechanism2d visualization of the elevator
-  private final Mechanism2d m_mech2d = new Mechanism2d(20, 50);
+  private final Mechanism2d m_mech2d = new Mechanism2d(5, 50);
   private final MechanismRoot2d m_mech2dRoot = m_mech2d.getRoot("Elevator Root", 10, 0);
   private final MechanismLigament2d m_elevatorMech2d =
       m_mech2dRoot.append(
@@ -89,7 +91,7 @@ public class ClimberIOSim implements ClimberIO, AutoCloseable {
   @Override
   public void updateInputs(ClimberIOInputs inputs) {
     inputs.climberLeaderPosition = MutableMeasure.ofBaseUnits(m_motorSim.getAngularPositionRotations(), Units.Rotations);
-    inputs.climberFollowerPosition = MutableMeasure.ofBaseUnits(m_motorSim.getAngularPositionRotations(), Units.Rotations);
+    inputs.climberFollowerPosition = inputs.climberLeaderPosition;
   }
 
   /**
@@ -104,6 +106,16 @@ public class ClimberIOSim implements ClimberIO, AutoCloseable {
     double pidOutput = m_controller.calculate(m_encoder.getDistance());
     double feedforwardOutput = m_feedforward.calculate(m_controller.getSetpoint().velocity);
     m_motor.setVoltage(pidOutput + feedforwardOutput);
+  }
+
+  @Override
+  public void setSetpoint(Measure<Angle> setpoint) {
+    reachGoal(setpoint.in(Units.Rotation));
+  }
+
+  @Override
+  public void setPercentageMaxSpeed(double percentage, boolean inverted) {
+    m_motor.set(percentage);
   }
 
   /** Stop the control loop and motor output. */

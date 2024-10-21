@@ -5,6 +5,7 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkBase.SoftLimitDirection;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.Angle;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.MutableMeasure;
@@ -22,9 +23,9 @@ public class ClimberIOSparkMax implements ClimberIO {
     private CANSparkMax rightMotor;
     private SparkPIDController controller;
 
-    public ClimberIOSparkMax() {
-        leftMotor = new CANSparkMax(Constants.Ports.kClimberLeaderID, MotorType.kBrushless);
-        rightMotor = new CANSparkMax(Constants.Ports.kClimberFollowerID, MotorType.kBrushless);
+    public ClimberIOSparkMax(int leftId, int rightId) {
+        leftMotor = new CANSparkMax(leftId, MotorType.kBrushless);
+        rightMotor = new CANSparkMax(rightId, MotorType.kBrushless);
         controller = leftMotor.getPIDController();
 
         controller.setP(Constants.PIDConstants.kClimberP);
@@ -56,8 +57,13 @@ public class ClimberIOSparkMax implements ClimberIO {
         inputs.followerConnected = rightMotor.getFirmwareVersion() == 0 ? false : true;
     }
 
+
     @Override
     public void setSetpoint(Measure<Angle> setpoint) {
+        if (MathUtil.isNear(setpoint.in(Units.Rotations), leftMotor.getEncoder().getPosition(), 0.5)) {
+            leftMotor.set(0);
+            rightMotor.set(0);
+        }
         controller.setReference(setpoint.in(Units.Rotations), CANSparkBase.ControlType.kPosition);
     }
 

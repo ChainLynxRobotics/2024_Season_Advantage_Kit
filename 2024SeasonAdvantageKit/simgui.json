@@ -11,7 +11,8 @@
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
-      "/SmartDashboard/Auto Choices": "String Chooser"
+      "/SmartDashboard/Auto Choices": "String Chooser",
+      "/SmartDashboard/Elevator Sim": "Mechanism2d"
     }
   },
   "NetworkTables": {

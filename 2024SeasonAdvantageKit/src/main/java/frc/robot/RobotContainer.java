@@ -12,6 +12,7 @@
 // GNU General Public License for more details.
 
 package frc.robot;
+import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -24,6 +25,10 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
+import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.climber.ClimberIO;
+import frc.robot.subsystems.climber.ClimberIOSim;
+import frc.robot.subsystems.climber.ClimberIOSparkMax;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -41,6 +46,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
+  private final Climber climber;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -61,6 +67,9 @@ public class RobotContainer {
                 new ModuleIOSparkMax(1),
                 new ModuleIOSparkMax(2),
                 new ModuleIOSparkMax(3));
+        climber =
+          new Climber(
+            new ClimberIOSparkMax(Constants.Ports.kClimberLeaderID, Constants.Ports.kClimberFollowerID));
         break;
 
       case SIM:
@@ -73,6 +82,8 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim(),
                 new ModuleIOSim());
+        climber = 
+            new Climber(new ClimberIOSim());
         break;
 
       default:
@@ -84,6 +95,9 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
+        climber =
+            new Climber(
+                new ClimberIO() {});
         break;
     }
 
@@ -121,7 +135,10 @@ public class RobotContainer {
       () -> -stick.getRawAxis(0), 
       () -> -stick.getRawAxis(1), 
       () -> -stick.getRawAxis(2)));
-      
+    
+    climber.setDefaultCommand(
+      run(() -> climber.moveClimbers(-stick.getRawAxis(0)), climber));
+
     controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
     controller
         .b()
