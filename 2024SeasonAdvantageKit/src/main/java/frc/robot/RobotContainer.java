@@ -51,6 +51,7 @@ public class RobotContainer {
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
   private final Joystick stick = new Joystick(0);
+  private final Joystick opStick = new Joystick(1);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -134,10 +135,11 @@ public class RobotContainer {
       drive,
       () -> -stick.getRawAxis(0), 
       () -> -stick.getRawAxis(1), 
-      () -> -stick.getRawAxis(2)));
+      () -> -stick.getRawAxis(4)));
     
     climber.setDefaultCommand(
-      run(() -> climber.moveClimbers(-stick.getRawAxis(0)), climber));
+      
+      run(() -> climber.moveClimbers(-opStick.getRawAxis(0)), climber));
 
     controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
     controller
