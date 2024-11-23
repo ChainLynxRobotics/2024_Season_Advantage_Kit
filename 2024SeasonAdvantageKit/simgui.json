@@ -10,6 +10,7 @@
   },
   "NTProvider": {
     "types": {
+      "/AdvantageKit/RealOutputs/climber pos": "Mechanism2d",
       "/FMSInfo": "FMSInfo",
       "/SmartDashboard/Auto Choices": "String Chooser",
       "/SmartDashboard/Elevator Sim": "Mechanism2d"

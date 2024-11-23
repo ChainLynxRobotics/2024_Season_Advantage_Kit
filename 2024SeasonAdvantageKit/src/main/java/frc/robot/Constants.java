@@ -24,7 +24,8 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final Mode currentMode = Mode.REAL;
+  public static final double LOOP_PERIOD_SECS = 0.02;
+  public static final Mode currentMode = Mode.SIM;
 
   public static enum Mode {
     /** Running on a real robot. */
@@ -56,6 +57,7 @@ public final class Constants {
     public static final int kClimberFollowerID = 12;
 
     public static final int kIndexerMotorId = 15;
+    public static final int kLinebreakSensorId = 6;
     public static final int kTopFlywheelMotorId = 16;
     public static final int kBottomFlywheelMotorId = 17;
     public static final int kShieldMotorId = 18;
@@ -100,5 +102,39 @@ public final class Constants {
     //  = (Pi * D) / ppr
     public static final double kElevatorEncoderDistPerPulse =
         2.0 * Math.PI * kElevatorDrumRadius / 4096;
+  }
+
+  public static final class PivotConstants {
+    public static final double kPivotEncoderDistPerPulse = 2.0 * Math.PI / 4096;
+
+    public static final double kPivotReduction = 200;
+    public static final double kPivotMass = 8.0; // kilograms
+    public static final double kPivotLength = 0.4064; // meters
+    public static final double kMinAngleRads = Units.degreesToRadians(15);
+    public static final double kMaxAngleRads = Units.degreesToRadians(120);
+
+    public static final double kAngleControlP = 0.2;
+    public static final double kAngleControlI = 0;
+    public static final double kAngleControlD = 0;
+    public static final double kAngleControlFF = 0.2;
+    public static final double kAngleControlIZone = 0.0001;
+    public static final double kAngleControlMinOutput = -1;
+    public static final double kAngleControlMaxOutput = 1;
+
+    public static final double kEncoderRotsToPivotRot = 160;
+    public static final double kSpeakerAngle = 75 / 360 * kEncoderRotsToPivotRot; // rotations
+    public static final double kAmpAngle = 109 / 360 * kEncoderRotsToPivotRot;
+    public static final double kAngleError = 0.5 / 360 * kEncoderRotsToPivotRot;
+  }
+
+  public static final class ShooterConstants {
+    public static final double kTopFlywheelP = 0.2;
+    public static final double kTopFlywheelI = 0;
+    public static final double kTopFlywheelD = 0.005;
+    public static final double kTopFlywheelFF = 0;
+    public static final double kTopFlywheelIZone = 0.0001;
+    public static final double kTopFlywheelMinOutput = -1;
+    public static final double kTopFlywheelMaxOutput = 1;
+    public static final double kFlywheelError = 1;
   }
 }

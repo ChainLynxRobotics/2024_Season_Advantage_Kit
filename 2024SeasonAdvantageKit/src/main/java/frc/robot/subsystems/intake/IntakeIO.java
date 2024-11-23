@@ -13,20 +13,15 @@ import edu.wpi.first.units.Voltage;
 public interface IntakeIO {
     @AutoLog
     public static class IntakeIOInputs {
-        public MutableMeasure<Voltage> topVoltage = MutableMeasure.zero(Units.Volts);
-        public MutableMeasure<Voltage> bottomVoltage = MutableMeasure.zero(Units.Volts);
-        public MutableMeasure<Current> topCurrent = MutableMeasure.zero(Units.Amps);
-        public MutableMeasure<Current> bottomCurrent = MutableMeasure.zero(Units.Amps);
-        public MutableMeasure<Temperature> topTemperature;
-        public MutableMeasure<Temperature> bottomTemperature;
-        public MutableMeasure<Velocity<Angle>> topVelocityRPM = MutableMeasure.zero(Units.RPM);
-        public MutableMeasure<Velocity<Angle>> bottomVelocityRPM = MutableMeasure.zero(Units.RPM);
-        public boolean topMotorConnected = true;
-        public boolean bottomMotorConnected = true;
+        public MutableMeasure<Voltage> voltage = MutableMeasure.zero(Units.Volts);
+        public MutableMeasure<Current> current = MutableMeasure.zero(Units.Amps);
+        public MutableMeasure<Temperature> temperature;
+        public MutableMeasure<Velocity<Angle>> velocityRPM = MutableMeasure.zero(Units.RPM);
+        public boolean motorConnected = true;
     }
 
     public default void updateInputs(IntakeIOInputs inputs) {}
 
-    public default void setVoltage(MutableMeasure<Voltage> topVoltage, MutableMeasure<Voltage> bottomVoltage) {}
+    public default void setVoltage(MutableMeasure<Voltage> voltage) {}
 
 }

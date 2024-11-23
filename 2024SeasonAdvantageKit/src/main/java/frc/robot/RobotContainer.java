@@ -35,6 +35,15 @@ import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSparkMax;
+import frc.robot.subsystems.indexer.Indexer;
+import frc.robot.subsystems.indexer.IndexerIO;
+import frc.robot.subsystems.indexer.IndexerIOSim;
+import frc.robot.subsystems.indexer.IndexerIOSparkMax;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeIO;
+import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.intake.IntakeIOSparkMax;
+
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -47,6 +56,8 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Climber climber;
+  private final Indexer indexer;
+  private final Intake intake;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -69,8 +80,14 @@ public class RobotContainer {
                 new ModuleIOSparkMax(2),
                 new ModuleIOSparkMax(3));
         climber =
-          new Climber(
-            new ClimberIOSparkMax(Constants.Ports.kClimberLeaderID, Constants.Ports.kClimberFollowerID));
+            new Climber(
+                new ClimberIOSparkMax(Constants.Ports.kClimberLeaderID, Constants.Ports.kClimberFollowerID));
+        indexer = 
+            new Indexer(
+                new IndexerIOSparkMax(Constants.Ports.kIndexerMotorId, Constants.Ports.kLinebreakSensorId));
+        intake = 
+            new Intake(
+                new IntakeIOSparkMax(Constants.Ports.kIntakeMotorID));
         break;
 
       case SIM:
@@ -85,6 +102,10 @@ public class RobotContainer {
                 new ModuleIOSim());
         climber = 
             new Climber(new ClimberIOSim());
+        indexer = 
+            new Indexer(new IndexerIOSim());
+        intake = 
+            new Intake(new IntakeIOSim());
         break;
 
       default:
@@ -99,6 +120,12 @@ public class RobotContainer {
         climber =
             new Climber(
                 new ClimberIO() {});
+        indexer = 
+            new Indexer(
+                new IndexerIO() {});
+        intake = 
+            new Intake(
+                new IntakeIO() {});
         break;
     }
 
@@ -135,7 +162,7 @@ public class RobotContainer {
       drive,
       () -> -stick.getRawAxis(0), 
       () -> -stick.getRawAxis(1), 
-      () -> -stick.getRawAxis(4)));
+      () -> -stick.getRawAxis(2)));
     
     climber.setDefaultCommand(
       
