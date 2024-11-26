@@ -12,18 +12,24 @@
 // GNU General Public License for more details.
 
 package frc.robot;
-import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.units.MutableMeasure;
+import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.Bindings;
+import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.PivotConstants;
+import frc.robot.Constants.Ports;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
@@ -43,6 +49,11 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.intake.IntakeIOSparkMax;
+import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterIO;
+import frc.robot.subsystems.shooter.ShooterIOSim;
+import frc.robot.subsystems.shooter.ShooterIOSparkMax;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -58,10 +69,11 @@ public class RobotContainer {
   private final Climber climber;
   private final Indexer indexer;
   private final Intake intake;
+  private final Shooter shooter;
+  private final Superstructure superstructure;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
-  private final Joystick stick = new Joystick(0);
   private final Joystick opStick = new Joystick(1);
 
   // Dashboard inputs
@@ -81,13 +93,16 @@ public class RobotContainer {
                 new ModuleIOSparkMax(3));
         climber =
             new Climber(
-                new ClimberIOSparkMax(Constants.Ports.kClimberLeaderID, Constants.Ports.kClimberFollowerID));
+                new ClimberIOSparkMax(Ports.kClimberLeaderID, Ports.kClimberFollowerID));
         indexer = 
             new Indexer(
-                new IndexerIOSparkMax(Constants.Ports.kIndexerMotorId, Constants.Ports.kLinebreakSensorId));
+                new IndexerIOSparkMax(Ports.kIndexerMotorId, Ports.kLinebreakSensorId));
         intake = 
             new Intake(
-                new IntakeIOSparkMax(Constants.Ports.kIntakeMotorID));
+                new IntakeIOSparkMax(Ports.kIntakeMotorID));
+        shooter =
+            new Shooter(
+                new ShooterIOSparkMax(Ports.kTopFlywheelMotorId, Ports.kBottomFlywheelMotorId, Ports.kPivotMotorLeaderId, Ports.kPivotMotorFollowerId));
         break;
 
       case SIM:
@@ -106,6 +121,8 @@ public class RobotContainer {
             new Indexer(new IndexerIOSim());
         intake = 
             new Intake(new IntakeIOSim());
+        shooter =
+            new Shooter(new ShooterIOSim());
         break;
 
       default:
@@ -126,9 +143,12 @@ public class RobotContainer {
         intake = 
             new Intake(
                 new IntakeIO() {});
+        shooter = 
+            new Shooter(
+                new ShooterIO() {});
         break;
     }
-
+    superstructure = new Superstructure(climber, indexer, intake, shooter);
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
@@ -150,23 +170,13 @@ public class RobotContainer {
     configureButtonBindings();
   }
 
-  /**
-   * Use this method to define your button->command mappings. Buttons can be created by
-   * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
-   * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-   */
   private void configureButtonBindings() {
     //drive.setDefaultCommand(DriveCommands.rotateCommand(drive, () -> -controller.getLeftX()));
     drive.setDefaultCommand(DriveCommands.joystickDrive(
       drive,
-      () -> -stick.getRawAxis(0), 
-      () -> -stick.getRawAxis(1), 
-      () -> -stick.getRawAxis(2)));
-    
-    climber.setDefaultCommand(
-      
-      run(() -> climber.moveClimbers(-opStick.getRawAxis(0)), climber));
+      () -> MathUtil.applyDeadband(-controller.getLeftY(), DriveConstants.driveDeadband), 
+      () -> MathUtil.applyDeadband(-controller.getLeftX(), DriveConstants.driveDeadband), 
+      () -> MathUtil.applyDeadband(-controller.getRightX(), DriveConstants.driveDeadband)));
 
     controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
     controller
@@ -178,6 +188,50 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
                     drive)
                 .ignoringDisable(true));
+    
+    new Trigger(() -> opStick.getRawButton(Bindings.kIntakeNoteButtonID))
+        .whileTrue(superstructure.intake(false))
+        .onFalse(superstructure.stopIntake());
+    new Trigger(() -> opStick.getRawButton(Bindings.kReverseIntakeButtonID))
+        .whileTrue(superstructure.intake(true))
+        .onFalse(superstructure.stopIntake());
+
+    new Trigger(() -> opStick.getRawButton(Bindings.kShoot))
+        .whileTrue(superstructure.indexPiece(false))
+        .onFalse(superstructure.stopIndexer());
+    new Trigger(() -> opStick.getRawButton(Bindings.kShootReverse))
+        .whileTrue(superstructure.indexPiece(true))
+        .onFalse(superstructure.stopIndexer());
+
+    new Trigger(() -> opStick.getRawButton(Bindings.kFlywheelSpeaker))
+        .whileTrue(superstructure.runFlywheels(ShooterConstants.kFlywheelDefaultRPM, false));
+
+    new Trigger(() -> opStick.getRawButton(Bindings.kBothClimbersUp))
+        .whileTrue(superstructure.climb(false, false, false))
+        .onFalse(superstructure.stopClimb());
+    new Trigger(() -> opStick.getRawButton(Bindings.kBothClimbersDown))
+        .whileTrue(superstructure.climb(true, false, false))
+        .onFalse(superstructure.stopClimb());
+    new Trigger(() -> opStick.getRawButton(Bindings.kLeftClimberUp))
+        .whileTrue(superstructure.climb(false, true, false))
+        .onFalse(superstructure.stopClimb());
+    new Trigger(() -> opStick.getRawButton(Bindings.kLeftClimberDown))
+        .whileTrue(superstructure.climb(true, true, false))
+        .onFalse(superstructure.stopClimb());
+    new Trigger(() -> opStick.getRawButton(Bindings.kRightClimberUp))
+        .whileTrue(superstructure.climb(false, false, true))
+        .onFalse(superstructure.stopClimb());
+    new Trigger(() -> opStick.getRawButton(Bindings.kRightClimberDown))
+        .whileTrue(superstructure.climb(true, false, true))
+        .onFalse(superstructure.stopClimb());
+
+    new Trigger(() -> opStick.getRawButton(Bindings.kStowShooter))
+        .whileTrue(superstructure.movePivot(MutableMeasure.ofBaseUnits(0.0, Units.Rotations)));
+    new Trigger(() -> opStick.getRawButton(Bindings.kAimSpeaker))
+        .whileTrue(superstructure.movePivot(PivotConstants.kSpeakerAngle));
+
+    new Trigger(() -> opStick.getRawButton(Bindings.kScoreSpeaker))
+        .onTrue(superstructure.scoreSpeaker(PivotConstants.kSpeakerAngle, ShooterConstants.kFlywheelDefaultRPM));
   }
 
   /**

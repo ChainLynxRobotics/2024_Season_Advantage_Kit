@@ -13,7 +13,10 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.Angle;
+import edu.wpi.first.units.MutableMeasure;
+import edu.wpi.first.units.Units;
+import edu.wpi.first.units.Velocity;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -25,7 +28,7 @@ import edu.wpi.first.math.util.Units;
  */
 public final class Constants {
   public static final double LOOP_PERIOD_SECS = 0.02;
-  public static final Mode currentMode = Mode.SIM;
+  public static final Mode currentMode = Mode.REAL;
 
   public static enum Mode {
     /** Running on a real robot. */
@@ -67,11 +70,39 @@ public final class Constants {
     public static final int kIntakeMotorID = 10;
   }
 
+  public final class Bindings {
+    public static final int kScoreSpeaker = 4;
+    public static final int kFlywheelSpeaker = 3;
+    public static final int kShoot = 1;
+    public static final int kShootReverse = 7;
+    public static final int kIntakeNoteButtonID = 2;
+    public static final int kReverseIntakeButtonID = 6;
+
+    public static final int kStowShooter = 8;
+    public static final int kAimAmp = 9; 
+    public static final int kAimSpeaker = 10;
+
+    public static final int kLeftClimberUp = 11;
+    public static final int kLeftClimberDown = 12;
+    public static final int kRightClimberUp = 13;
+    public static final int kRightClimberDown = 14;
+    public static final int kBothClimbersUp = 15;
+    public static final int kBothClimbersDown = 16;
+  }
+
   public static final class PIDConstants {
     public static final double kClimberP = 0.5;
     public static final double kClimberI = 0;
     public static final double kClimberD = 0;
     
+  }
+
+  public static final class DriveConstants {
+    public static final double driveDeadband = 0.15;
+  }
+
+  public static final class ClimberConstants {
+    public static final double defaultClimbSpeed = 0.6;
   }
 
   public static final class ElevatorConstants {
@@ -90,7 +121,7 @@ public final class Constants {
     public static final double kElevatorkA = 0.0; // volt per acceleration (V/(m/s²))
 
     public static final double kElevatorGearing = 10.0;
-    public static final double kElevatorDrumRadius = Units.inchesToMeters(2.0);
+    public static final double kElevatorDrumRadius = 0.051;
     public static final double kCarriageMass = 4.0; // kg
 
     public static final double kSetpointMeters = 0.75;
@@ -110,8 +141,8 @@ public final class Constants {
     public static final double kPivotReduction = 200;
     public static final double kPivotMass = 8.0; // kilograms
     public static final double kPivotLength = 0.4064; // meters
-    public static final double kMinAngleRads = Units.degreesToRadians(15);
-    public static final double kMaxAngleRads = Units.degreesToRadians(120);
+    public static final double kMinAngleRads = 15*Math.PI/180;
+    public static final double kMaxAngleRads = 120*Math.PI/180;
 
     public static final double kAngleControlP = 0.2;
     public static final double kAngleControlI = 0;
@@ -122,7 +153,7 @@ public final class Constants {
     public static final double kAngleControlMaxOutput = 1;
 
     public static final double kEncoderRotsToPivotRot = 160;
-    public static final double kSpeakerAngle = 75 / 360 * kEncoderRotsToPivotRot; // rotations
+    public static final MutableMeasure<Angle> kSpeakerAngle = MutableMeasure.ofBaseUnits(75 / 360 * kEncoderRotsToPivotRot, Units.Rotations); 
     public static final double kAmpAngle = 109 / 360 * kEncoderRotsToPivotRot;
     public static final double kAngleError = 0.5 / 360 * kEncoderRotsToPivotRot;
   }
@@ -136,5 +167,7 @@ public final class Constants {
     public static final double kTopFlywheelMinOutput = -1;
     public static final double kTopFlywheelMaxOutput = 1;
     public static final double kFlywheelError = 1;
+
+    public static final MutableMeasure<Velocity<Angle>> kFlywheelDefaultRPM = MutableMeasure.ofBaseUnits(1000, Units.RPM);
   }
 }

@@ -21,8 +21,9 @@ public class Shooter extends SubsystemBase {
         Logger.processInputs("Shooter", shooterInputs);
     }
 
-    public void runFlywheels(MutableMeasure<Velocity<Angle>> setpoint) {
-        shooterIO.setRPM(setpoint);
+    public void runFlywheels(MutableMeasure<Velocity<Angle>> setpoint, boolean reverse) {
+        int multiplier = reverse ? -1 : 1;
+        shooterIO.setRPM(setpoint.mut_times(multiplier));
     }
 
     public void setAngle(MutableMeasure<Angle> setpoint) {

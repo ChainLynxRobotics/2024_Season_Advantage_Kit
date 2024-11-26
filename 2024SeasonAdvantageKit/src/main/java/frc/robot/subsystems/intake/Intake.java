@@ -20,8 +20,9 @@ public class Intake extends SubsystemBase {
         Logger.processInputs("Intake", intakeInputs);
     }
 
-    public void run(double motorOutput) {
-        intakeIO.setVoltage(MutableMeasure.ofBaseUnits(12, Units.Volts));
+    public void run(boolean reverse) {
+        int multiplier = reverse ? -1 : 1;
+        intakeIO.setVoltage(MutableMeasure.ofBaseUnits(12 * multiplier, Units.Volts));
       }
     
       public void stop() {

@@ -26,6 +26,8 @@ public interface ClimberIO {
         public MutableMeasure<Velocity<Angle>> climberFollowerVelocity = MutableMeasure.zero(Units.RotationsPerSecond);
         public boolean leaderConnected = true;
         public boolean followerConnected = true;
+        public boolean moveLeftOnly = false;
+        public boolean moveRightOnly = false;
     }
 
     default void updateInputs(ClimberIOInputs inputs) {}
