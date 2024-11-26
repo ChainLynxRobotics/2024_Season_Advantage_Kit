@@ -107,10 +107,8 @@ public class Superstructure extends SubsystemBase {
                 movePivot(angleSetpoint),
                 intake(false).withTimeout(3).andThen(stopIntake()),
                 runFlywheels(rpm, false).withTimeout(2),
-                parallel(
-                    indexPiece(false),
-                    runFlywheels(rpm, false)
-                ).withTimeout(2),
+                indexPiece(false),
+                runFlywheels(rpm, false).withTimeout(2),
                 stopIndexer()
             );
     } 

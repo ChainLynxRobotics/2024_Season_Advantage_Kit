@@ -33,7 +33,6 @@ import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
-import frc.robot.subsystems.climber.ClimberIOSim;
 import frc.robot.subsystems.climber.ClimberIOSparkMax;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -116,7 +115,7 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim());
         climber = 
-            new Climber(new ClimberIOSim());
+            new Climber(new ClimberIO() {});
         indexer = 
             new Indexer(new IndexerIOSim());
         intake = 
