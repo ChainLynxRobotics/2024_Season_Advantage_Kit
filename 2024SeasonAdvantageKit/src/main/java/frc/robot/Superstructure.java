@@ -16,33 +16,6 @@ import frc.robot.subsystems.shooter.Shooter;
 
 /** Coordinates high-level actions between 1 or more subsystems,  */
 public class Superstructure extends SubsystemBase {
-    /* 
-    //holds current robot state
-    public enum RobotState {
-        DO_NOTHING
-    }
-
-    //periodically update currentState based on desiredState
-    private RobotState currentState = RobotState.DO_NOTHING;
-    private RobotState desiredState = RobotState.DO_NOTHING;
-    private RobotState previousState; //handle state transititions
-    
-    public void setDesiredRobotState(RobotState desiredState) {
-        this.desiredState = desiredState;
-    }
-
-    public Command setDesiredRobotStateCommand(RobotState desiredState) {
-        return new InstantCommand(() -> setDesiredRobotState(desiredState));
-    }
-
-    @Override 
-    public void periodic() {
-        Logger.recordOutput("DesiredSuperstate", desiredState);
-        if (currentState != preState) {
-            Logger.recordOutput("CurrentSuperstate", currentSuperState);
-        }
-    }
-    */
     private Climber climber;
     private Indexer indexer;
     private Intake intake;
