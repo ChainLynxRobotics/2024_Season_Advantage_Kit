@@ -82,8 +82,8 @@ public final class Constants {
     public static final int kAimAmp = 9; 
     public static final int kAimSpeaker = 10;
 
-    public static final int kLeftClimberUp = 11;
-    public static final int kLeftClimberDown = 12;
+    public static final int kLeftClimberUp = 12;
+    public static final int kLeftClimberDown = 11;
     public static final int kRightClimberUp = 13;
     public static final int kRightClimberDown = 14;
     public static final int kBothClimbersUp = 15;

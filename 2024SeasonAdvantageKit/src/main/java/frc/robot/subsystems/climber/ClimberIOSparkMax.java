@@ -22,8 +22,6 @@ public class ClimberIOSparkMax implements ClimberIO {
     private CANSparkMax leftMotor;
     private CANSparkMax rightMotor;
     private SparkPIDController controller;
-    private boolean leftOnly = false;
-    private boolean rightOnly = false;
 
     public ClimberIOSparkMax(int leftId, int rightId) {
         leftMotor = new CANSparkMax(leftId, MotorType.kBrushless);
@@ -57,9 +55,6 @@ public class ClimberIOSparkMax implements ClimberIO {
 
         inputs.leaderConnected = leftMotor.getFirmwareVersion() == 0 ? false : true;
         inputs.followerConnected = rightMotor.getFirmwareVersion() == 0 ? false : true;
-
-        leftOnly = inputs.moveLeftOnly;
-        rightOnly = inputs.moveRightOnly;
     }
 
 
@@ -79,13 +74,13 @@ public class ClimberIOSparkMax implements ClimberIO {
     }
 
     @Override
-    public void setPercentageMaxSpeed(double percentage, boolean followerInverted) {
+    public void setPercentageMaxSpeed(double percentage, boolean followerInverted, boolean leftOnly, boolean rightOnly) {
         int multiplier = followerInverted ? -1 : 1;
         if (!rightOnly) {
-            leftMotor.set(percentage);
+            leftMotor.set(-percentage);
         }
         if (!leftOnly) {
-            rightMotor.set(-percentage * multiplier);
+            rightMotor.set(percentage * multiplier);
         }
     }
 

@@ -56,20 +56,13 @@ public class Superstructure extends SubsystemBase {
     }
 
     public Command climb(boolean reverse, boolean leftOnly, boolean rightOnly) {
-        if (leftOnly) {
-            climber.setLeftOnly();
-        }
-        if (rightOnly) {
-            climber.setRightOnly();
-        }
         return runOnce(
-            () -> climber.moveClimbers(ClimberConstants.defaultClimbSpeed, reverse));
+            () -> climber.moveClimbers(ClimberConstants.defaultClimbSpeed, reverse, leftOnly, rightOnly));
     }
 
     public Command stopClimb() {
         return runOnce(
-            () -> climber.moveClimbers(0, false))
-                .finallyDo(climber::setBoth);
+            () -> climber.moveClimbers(0, false, false, false));
     }
 
     public Command intake(boolean reverse) {

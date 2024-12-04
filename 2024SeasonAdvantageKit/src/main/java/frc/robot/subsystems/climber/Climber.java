@@ -20,26 +20,12 @@ public class Climber extends SubsystemBase {
         Logger.processInputs("Climber", climberInputs);
     }
 
-    public void moveClimbers(double speed, boolean reverse) {
+    public void moveClimbers(double speed, boolean reverse, boolean leftOnly, boolean rightOnly) {
         int multiplier = reverse ? -1 : 1;
-        climberIO.setPercentageMaxSpeed(speed * multiplier, false);
+        climberIO.setPercentageMaxSpeed(speed * multiplier, false, leftOnly, rightOnly);
     }
 
     public void setSetpoint(Measure<Angle> setpoint) {
         climberIO.setSetpoint(setpoint);
     }
-
-    public void setLeftOnly() {
-        climberInputs.moveLeftOnly = true;
-    }
-
-    public void setRightOnly() {
-        climberInputs.moveRightOnly = true;
-    }
-
-    public void setBoth() {
-        climberInputs.moveLeftOnly = false;
-        climberInputs.moveRightOnly = false;
-    }
-    
 }

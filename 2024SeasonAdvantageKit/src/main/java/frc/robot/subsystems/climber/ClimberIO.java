@@ -36,7 +36,7 @@ public interface ClimberIO {
 
     default void zeroEncoders() {}
 
-    default void setPercentageMaxSpeed(double percentage, boolean followerInverted) {}
+    default void setPercentageMaxSpeed(double percentage, boolean followerInverted,  boolean leftOnly, boolean rightOnly) {}
 
     default void disableSoftLimits() {}
 
