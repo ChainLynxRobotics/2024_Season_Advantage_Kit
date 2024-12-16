@@ -170,7 +170,7 @@ public class RobotContainer {
   }
 
   private void configureButtonBindings() {
-    //drive.setDefaultCommand(DriveCommands.rotateCommand(drive, () -> -controller.getLeftX()));
+    drive.setDefaultCommand(DriveCommands.testDriveCommand(drive, 0.1));
     /*drive.setDefaultCommand(DriveCommands.joystickDrive(
       drive,
       () -> MathUtil.applyDeadband(-controller.getLeftY(), DriveConstants.driveDeadband), 

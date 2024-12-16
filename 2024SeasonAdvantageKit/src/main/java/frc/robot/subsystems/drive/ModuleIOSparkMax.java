@@ -59,30 +59,31 @@ public class ModuleIOSparkMax implements ModuleIO {
   private final Rotation2d absoluteEncoderOffset;
 
   public ModuleIOSparkMax(int index) {
+    //TODO set encoder offsets
     switch (index) {
       case 0:
         driveSparkMax = new CANSparkMax(Constants.Ports.kFrontLeftDrivingCanId, MotorType.kBrushless);
         turnSparkMax = new CANSparkMax(Constants.Ports.kFrontLeftTurningCanId, MotorType.kBrushless);
         turnAbsoluteEncoder = new AnalogInput(0);
-        absoluteEncoderOffset = new Rotation2d(0.0); // MUST BE CALIBRATED
+        absoluteEncoderOffset = new Rotation2d(Units.degreesToRadians(0.0)); // MUST BE CALIBRATED
         break;
       case 1:
         driveSparkMax = new CANSparkMax(Constants.Ports.kFrontRightDrivingCanId, MotorType.kBrushless);
         turnSparkMax = new CANSparkMax(Constants.Ports.kFrontRightTurningCanId, MotorType.kBrushless);
         turnAbsoluteEncoder = new AnalogInput(1);
-        absoluteEncoderOffset = new Rotation2d(0.0); // MUST BE CALIBRATED
+        absoluteEncoderOffset = new Rotation2d(Units.degreesToRadians(0.0)); // MUST BE CALIBRATED
         break;
       case 2:
         driveSparkMax = new CANSparkMax(Constants.Ports.kRearLeftDrivingCanId, MotorType.kBrushless);
         turnSparkMax = new CANSparkMax(Constants.Ports.kRearLeftTurningCanId, MotorType.kBrushless);
         turnAbsoluteEncoder = new AnalogInput(2);
-        absoluteEncoderOffset = new Rotation2d(0.0); // MUST BE CALIBRATED
+        absoluteEncoderOffset = new Rotation2d(Units.degreesToRadians(0.0)); // MUST BE CALIBRATED
         break;
       case 3:
         driveSparkMax = new CANSparkMax(Constants.Ports.kRearRightDrivingCanId, MotorType.kBrushless);
         turnSparkMax = new CANSparkMax(Constants.Ports.kRearRightTurningCanId, MotorType.kBrushless);
         turnAbsoluteEncoder = new AnalogInput(3);
-        absoluteEncoderOffset = new Rotation2d(0.0); // MUST BE CALIBRATED
+        absoluteEncoderOffset = new Rotation2d(Units.degreesToRadians(0.0)); // MUST BE CALIBRATED
         break;
       default:
         throw new RuntimeException("Invalid module index");

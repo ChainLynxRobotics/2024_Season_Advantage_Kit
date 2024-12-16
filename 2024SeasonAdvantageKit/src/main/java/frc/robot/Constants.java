@@ -28,7 +28,7 @@ import edu.wpi.first.units.Velocity;
  */
 public final class Constants {
   public static final double LOOP_PERIOD_SECS = 0.02;
-  public static final Mode currentMode = Mode.SIM;
+  public static final Mode currentMode = Mode.REAL;
 
   public static enum Mode {
     /** Running on a real robot. */

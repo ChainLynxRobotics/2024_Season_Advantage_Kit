@@ -76,6 +76,12 @@ public class DriveCommands {
         drive);
   }
 
+  public static Command testDriveCommand(Drive drive, double forwardMag) {
+    return Commands.run(() -> {
+        drive.runVelocity(new ChassisSpeeds(forwardMag, 0, 0));
+    });
+  }
+
   public static Command rotateCommand(Drive drive, DoubleSupplier rot) {
     return Commands.run(() -> {
         drive.runVelocity(new ChassisSpeeds(0, 0, rot.getAsDouble()));
