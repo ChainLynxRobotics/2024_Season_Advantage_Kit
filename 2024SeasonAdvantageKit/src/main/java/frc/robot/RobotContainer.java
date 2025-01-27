@@ -196,14 +196,22 @@ public class RobotContainer {
         .onFalse(superstructure.stopIntake());
 
     new Trigger(() -> opStick.getRawButton(Bindings.kShoot))
-        .whileTrue(superstructure.indexPiece(false))
+        .onTrue(superstructure.indexPiece(false))
         .onFalse(superstructure.stopIndexer());
     new Trigger(() -> opStick.getRawButton(Bindings.kShootReverse))
-        .whileTrue(superstructure.indexPiece(true))
+        .onTrue(superstructure.indexPiece(true))
         .onFalse(superstructure.stopIndexer());
 
     new Trigger(() -> opStick.getRawButton(Bindings.kFlywheelSpeaker))
-        .whileTrue(superstructure.runFlywheels(ShooterConstants.kFlywheelDefaultRPM, false));
+        .onTrue(superstructure.runFlywheels(ShooterConstants.kFlywheelDefaultRPM));
+
+    new Trigger(() -> opStick.getRawButton(Bindings.kStowShooter))
+        .onTrue(superstructure.movePivot(MutableMeasure.ofBaseUnits(0.0, Units.Rotations)));
+    new Trigger(() -> opStick.getRawButton(Bindings.kAimSpeaker))
+        .onTrue(superstructure.movePivot(PivotConstants.kSpeakerAngle));
+
+    new Trigger(() -> opStick.getRawButton(Bindings.kScoreSpeaker))
+        .onTrue(superstructure.scoreSpeaker(PivotConstants.kSpeakerAngle, ShooterConstants.kFlywheelDefaultRPM));
 
     new Trigger(() -> opStick.getRawButton(Bindings.kBothClimbersUp))
         .whileTrue(superstructure.climb(false, false, false))
@@ -223,14 +231,6 @@ public class RobotContainer {
     new Trigger(() -> opStick.getRawButton(Bindings.kRightClimberDown))
         .whileTrue(superstructure.climb(true, false, true))
         .onFalse(superstructure.stopClimb());
-
-    new Trigger(() -> opStick.getRawButton(Bindings.kStowShooter))
-        .whileTrue(superstructure.movePivot(MutableMeasure.ofBaseUnits(0.0, Units.Rotations)));
-    new Trigger(() -> opStick.getRawButton(Bindings.kAimSpeaker))
-        .whileTrue(superstructure.movePivot(PivotConstants.kSpeakerAngle));
-
-    new Trigger(() -> opStick.getRawButton(Bindings.kScoreSpeaker))
-        .onTrue(superstructure.scoreSpeaker(PivotConstants.kSpeakerAngle, ShooterConstants.kFlywheelDefaultRPM));
   }
 
   /**

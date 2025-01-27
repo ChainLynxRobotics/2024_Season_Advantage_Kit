@@ -7,12 +7,14 @@ import edu.wpi.first.units.MutableMeasure;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.Velocity;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimberConstants;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.Shooter.ShooterState;
 
 /** Coordinates high-level actions between 1 or more subsystems,  */
 public class Superstructure extends SubsystemBase {
@@ -48,20 +50,19 @@ public class Superstructure extends SubsystemBase {
     }
  
     public Command movePivot(MutableMeasure<Angle> setpoint) {
-        return run(
-            () -> shooter.setAngle(setpoint)) 
-            .until(() -> shooter.isAtAngleSetpoint());
+        return runOnce(() -> shooter.setAngle(setpoint));
     } 
 
-    public Command runFlywheels(MutableMeasure<Velocity<Angle>> rpm, boolean reverse) {
-        return run(
-            () -> shooter.runFlywheels(rpm, reverse))
-            .finallyDo(() -> shooter.runFlywheels(MutableMeasure.ofBaseUnits(0, Units.RPM), reverse));
+    public Command runFlywheels(MutableMeasure<Velocity<Angle>> rpm) {
+        return runOnce(() -> shooter.setFlywheelSpeed(rpm));
     } 
+
+    public Command stopFlywheels() {
+        return runOnce(() -> shooter.setFlywheelSpeed(MutableMeasure.ofBaseUnits(0, Units.RPM)));
+    }
 
     public Command indexPiece(boolean reverse) {
-        return runOnce(
-            () -> indexer.startFeedNote(reverse));
+        return runOnce(() -> indexer.startFeedNote(reverse));
     } 
 
     public Command stopIndexer() {
@@ -70,11 +71,14 @@ public class Superstructure extends SubsystemBase {
 
     public Command scoreSpeaker(MutableMeasure<Angle> angleSetpoint, MutableMeasure<Velocity<Angle>> rpm) {
         return sequence(
-                movePivot(angleSetpoint),
+                movePivot(angleSetpoint), // set pivot setpoint
+                runOnce(() -> shooter.setShooterState(ShooterState.PIVOTING)), // set state
                 intake(false).withTimeout(3).andThen(stopIntake()),
-                runFlywheels(rpm, false).withTimeout(2),
+                runFlywheels(rpm), //set flywheel setpoint
+                runOnce(() -> shooter.setShooterState(ShooterState.SHOOTING)), // set state
                 indexPiece(false),
-                runFlywheels(rpm, false).withTimeout(2),
+                waitSeconds(2), 
+                stopFlywheels(),
                 stopIndexer()
             );
     } 
